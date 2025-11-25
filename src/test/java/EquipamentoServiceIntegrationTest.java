@@ -99,6 +99,9 @@ public class EquipamentoServiceIntegrationTest {
                 "CÓDIGOTESTE",
                 "SETORTESTE"
         );
+
+        equipamento.setStatusOperacional("OPERACIONAL");
+
         Equipamento equipamentoNovo = equipamentoService.criarEquipamento(equipamento);
 
         assertNotNull(equipamentoNovo);
