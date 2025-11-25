@@ -1,13 +1,22 @@
 package org.example.service.falha;
 
 import org.example.model.Falha;
+import org.example.repository.FalhaRepositoryImpl;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class FalhaServiceImpl implements FalhaService{
+    FalhaRepositoryImpl falhaRepository = new FalhaRepositoryImpl();
+
     @Override
     public Falha registrarNovaFalha(Falha falha) throws SQLException {
+        try {
+            Falha falhaSalva = falhaRepository.registrarFalha(falha);
+            return falhaSalva;
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 
