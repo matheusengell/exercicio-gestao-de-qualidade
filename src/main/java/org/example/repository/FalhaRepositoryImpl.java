@@ -40,13 +40,34 @@ public class FalhaRepositoryImpl {
    return falha;
     }
 
-    public <FalhaCritica> List<FalhaCritica> falhaCriticaList() throws SQLException{
+    public List<Falha> falhaCriticaList() throws SQLException{
+        List<Falha> falhaCriticas = new ArrayList<>();
         String query = """
                 SELECT equipamentoId, dataHoraOcorrencia, descricao, criticidade, status, tempoParadaHoras
                 FROM Falha 
-                WHERE criticidade = 'CRITICA'        
-                """;
-        List<FalhaCritica> falhaCriticas = new ArrayList<>();
+                WHERE criticidade = 'CRITICA' 
+                AND status = 'ABERTA'       
+         """;
+
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()){
+            long equipamentoId = rs.getLong("equipamentoId");
+            Timestamp dataHora = rs.getTimestamp("dataHoraOcorrencia");
+            String descricao = rs.getString("descricao");
+            String  criticidade = rs.getString("criticidade");
+            String status = rs.getString("status");
+            BigDecimal tempoParada = rs.getBigDecimal("tempoParadaHoras");
+            Falha falha = new Falha(equipamentoId, dataHora.toLocalDateTime(), descricao, criticidade,status, tempoParada);
+            falhaCriticas.add(falha);
+        }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
 
 
     return falhaCriticas;

@@ -72,4 +72,42 @@ public class EquipamentoRepositoryImpl {
         }
         return null;
     }
+
+    public void atualizarStatus(String status, long id)throws SQLException{
+        String query = """
+                UPDATE Equipamento
+                SET statusOperacional = ?
+                WHERE id = ?
+                """;
+
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setString(1,status);
+            stmt.setLong(2, id);
+            stmt.executeUpdate();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public boolean equipamentoExiste(Long id) throws SQLException{
+        String query = """
+                SELECT COUNT(0)
+                FROM Equipamento 
+                WHERE id = ?
+                """;
+
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                return rs.getLong(1) > 0;
+            }
+        }
+    return false;
+    }
+
 }
