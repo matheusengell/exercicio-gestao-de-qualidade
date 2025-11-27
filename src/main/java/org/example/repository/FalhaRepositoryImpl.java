@@ -68,8 +68,47 @@ public class FalhaRepositoryImpl {
             e.printStackTrace();
         }
 
-
-
     return falhaCriticas;
     }
+
+    public void atualizarFalha(String status, long id)throws SQLException{
+        String query = """
+               UPDATE Falha
+               SET status = ?
+               WHERE id = ? 
+                """;
+        try (Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setString(1, status);
+            stmt.setLong(2, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    public Falha buscarFalhaId( long id)throws SQLException{
+        String query = """
+                SELECT id, equipamentoId, dataHoraOcorrencia, descricao, criticidade, status, tempoParadaHoras
+                FROM Falha
+                WHERE id = ?
+                """;
+
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Long equipamentoId = rs.getLong("equipamentoId");
+                LocalDateTime dataHoraOcorrencia = rs.getTimestamp("dataHoraOcorrencia").toLocalDateTime();
+                String descricao = rs.getString("descricao");
+                String criticidade = rs.getString("criticidade");
+                String status = rs.getString("status");
+                BigDecimal tempoParadaHoras = rs.getBigDecimal("tempoParadaHoras");
+
+
+                return new Falha(equipamentoId, dataHoraOcorrencia, descricao, criticidade, status, tempoParadaHoras);
+            }
+
+        }
+            return null;}
 }
