@@ -7,7 +7,7 @@ public class RelatorioParadaDTO {
 
     public RelatorioParadaDTO(Long equipamentoId, String nomeEquipamento, double totalHorasParadas) {
         this.equipamentoId = equipamentoId;
-        this.nomeEquipamento = nomeEquipamento;
+            this.nomeEquipamento = nomeEquipamento;
         this.totalHorasParadas = totalHorasParadas;
     }
 

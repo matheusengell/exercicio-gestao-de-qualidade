@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.database.Conexao;
+import org.example.dto.RelatorioParadaDTO;
 import org.example.model.Falha;
 
 import java.math.BigDecimal;
@@ -110,5 +111,29 @@ public class FalhaRepositoryImpl {
             }
 
         }
-            return null;}
+            return null;
+    }
+
+    public List<RelatorioParadaDTO> gerarRelatorioTempoParada()throws SQLException{
+        List<RelatorioParadaDTO> relatorioParadaDTOS = new ArrayList<>();
+        String query = """
+                SELECT f.equipamentoId, e.nome, f.tempoParadaHoras
+                FROM Falha f
+                JOIN Equipamento e
+                ON f.equipamentoId = e.id
+                """;
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()){
+                long equipamentoId = rs.getLong("equipamentoId");
+                String nome = rs.getString("nome");
+                double horasParadas = rs.getDouble("tempoParadaHoras");
+                relatorioParadaDTOS.add(new RelatorioParadaDTO(equipamentoId, nome, horasParadas));
+            }
+        }
+        return relatorioParadaDTOS;
+    }
+
 }
