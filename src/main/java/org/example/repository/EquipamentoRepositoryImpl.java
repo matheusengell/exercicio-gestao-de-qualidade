@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.database.Conexao;
+import org.example.dto.EquipamentoContagemFalhasDTO;
 import org.example.model.Equipamento;
 
 import java.sql.*;
@@ -112,5 +113,36 @@ public class EquipamentoRepositoryImpl {
         }
     return false;
     }
+
+    public List<EquipamentoContagemFalhasDTO> gerarRelatorioManutencaoPreventiva(int contagemMinimaFalhas)throws SQLException{
+        List<EquipamentoContagemFalhasDTO> equipamentoContagemFalhasDTOS = new ArrayList<>();
+        String query = """
+                SELECT    e.id,
+                e.nome,
+                COUNT(f.id) AS totalFalhas
+                FROM Equipamento e
+                LEFT JOIN Falha f ON f.equipamentoId = e.id
+                GROUP BY e.id, e.nome
+                HAVING COUNT(f.id) >= ?      
+                """;
+
+        try (Connection conn = Conexao.conectar();
+        PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setInt(1, contagemMinimaFalhas);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()){
+                EquipamentoContagemFalhasDTO dto =
+                        new EquipamentoContagemFalhasDTO(
+                                rs.getLong("id"),
+                                rs.getString("nome"),
+                                rs.getInt("totalFalhas")
+                        );
+                equipamentoContagemFalhasDTOS.add(dto);
+            }
+        }
+        return equipamentoContagemFalhasDTOS;
+    }
+
 
 }

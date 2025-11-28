@@ -166,8 +166,8 @@ public class FalhaRepositoryImpl {
         return new Falha(equipamentoId, dataHoraOcorrencia, descricao,criticidade,status, tempoParadaHoras);
     }
     }
-
     return null;
     }
+
 
 }
