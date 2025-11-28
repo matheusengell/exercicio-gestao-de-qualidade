@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.database.Conexao;
+import org.example.dto.FalhaDetalhadaDTO;
 import org.example.dto.RelatorioParadaDTO;
 import org.example.model.Falha;
 
@@ -9,6 +10,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FalhaRepositoryImpl {
 
@@ -134,6 +136,38 @@ public class FalhaRepositoryImpl {
             }
         }
         return relatorioParadaDTOS;
+    }
+
+    public Falha buscarDetalhesCompletosFalha(long falhaId)throws SQLException{
+    String query = """
+            SELECT id
+             ,equipamentoId
+             ,dataHoraOcorrencia
+             ,descricao
+             ,criticidade
+             ,status
+             ,tempoParadaHoras
+                 FROM Falha
+                 WHERE id = ?
+            """;
+    try (Connection conn = Conexao.conectar();
+    PreparedStatement stmt = conn.prepareStatement(query)){
+    stmt.setLong(1, falhaId);
+    ResultSet rs = stmt.executeQuery();
+
+    while (rs.next()){
+        Long equipamentoId = rs.getLong("equipamentoId");
+        LocalDateTime dataHoraOcorrencia = rs.getTimestamp("dataHoraOcorrencia").toLocalDateTime();
+        String descricao = rs.getString("descricao");
+        String criticidade = rs.getString("criticidade");
+        String status = rs.getString("status");
+        BigDecimal tempoParadaHoras = rs.getBigDecimal("tempoParadaHoras");
+
+        return new Falha(equipamentoId, dataHoraOcorrencia, descricao,criticidade,status, tempoParadaHoras);
+    }
+    }
+
+    return null;
     }
 
 }

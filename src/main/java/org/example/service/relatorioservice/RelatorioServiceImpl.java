@@ -4,6 +4,7 @@ import org.example.dto.EquipamentoContagemFalhasDTO;
 import org.example.dto.FalhaDetalhadaDTO;
 import org.example.dto.RelatorioParadaDTO;
 import org.example.model.Equipamento;
+import org.example.model.Falha;
 import org.example.repository.AcaoCorretivaRepositoryImpl;
 import org.example.repository.EquipamentoRepositoryImpl;
 import org.example.repository.FalhaRepositoryImpl;
@@ -30,11 +31,24 @@ public class RelatorioServiceImpl implements RelatorioService{
 
     @Override
     public Optional<FalhaDetalhadaDTO> buscarDetalhesCompletosFalha(long falhaId) throws SQLException {
-        return Optional.empty();
+        Falha falha = falhaRepository.buscarFalhaId(falhaId);
+
+        if (falha == null){
+            throw new RuntimeException();
+        }
+
+        Equipamento equipamento = equipamentoRepository.buscarId(falha.getEquipamentoId());
+
+        if (equipamento == null){
+            throw new RuntimeException();
+        }
+
+        return Optional.of(new FalhaDetalhadaDTO(falha, equipamento));
     }
 
     @Override
     public List<EquipamentoContagemFalhasDTO> gerarRelatorioManutencaoPreventiva(int contagemMinimaFalhas) throws SQLException {
+
         return List.of();
     }
 }
